@@ -1,8 +1,10 @@
 "use client";
 
 import { z } from "zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 const validationSchema = z
   .object({
@@ -23,6 +25,8 @@ const validationSchema = z
   });
 
 const RegisterForm = () => {
+  const [isUserExists, setIsUserExists] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -31,130 +35,176 @@ const RegisterForm = () => {
     resolver: zodResolver(validationSchema),
   });
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = async (data) => {
+    console.log(data);
+
+    const usernameData = {
+      username: data.username,
+    };
+    const formData = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      group: data.group,
+    };
+
+    try {
+      const userExists = await fetch("/api/user/getuser", {
+        method: "POST",
+        body: JSON.stringify(usernameData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.json());
+
+      if (!!userExists?.username) {
+        setIsUserExists(true);
+        return;
+      }
+
+      const res = await fetch("/api/user/createuser", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) return;
+
+      signIn(undefined, { callbackUrl: "/" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <form className="px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-4">
-        <label
-          className="block mb-2 text-sm font-bold text-gray-700"
-          htmlFor="username"
-        >
-          用户名
-        </label>
-        <input
-          className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded appearance-none focus:outline-none focus:shadow-outline"
-          id="username"
-          type="text"
-          placeholder="Username"
-          {...register("username")}
-        />
-        {errors.username && (
-          <p className="text-xs italic text-red-500 mt-2">
-            {errors.username?.message}
-          </p>
-        )}
-      </div>
-      <div className="mb-4">
-        <label
-          className="block mb-2 text-sm font-bold text-gray-700"
-          htmlFor="email"
-        >
-          Email
-        </label>
-        <input
-          className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded appearance-none focus:outline-none focus:shadow-outline"
-          id="email"
-          type="email"
-          placeholder="Email"
-          {...register("email")}
-        />
-        {errors.email && (
-          <p className="text-xs italic text-red-500 mt-2">
-            {errors.email?.message}
-          </p>
-        )}
-      </div>
-      <div className="mb-4 md:flex md:justify-between">
-        <div className="mb-4 md:mr-2 md:mb-0">
+    <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+      <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+        创建新用户
+      </h1>
+      <form
+        className="space-y-4 md:space-y-6"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="mb-4">
           <label
-            className="block mb-2 text-sm font-bold text-gray-700"
-            htmlFor="password"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="username"
           >
-            密码
+            用户名
           </label>
           <input
-            className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded appearance-none focus:outline-none focus:shadow-outline"
-            id="password"
-            type="password"
-            {...register("password")}
+            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            id="username"
+            type="text"
+            placeholder="username"
+            {...register("username")}
           />
-          {errors.password && (
+          {errors.username && (
             <p className="text-xs italic text-red-500 mt-2">
-              {errors.password?.message}
+              {errors.username?.message}
+            </p>
+          )}
+          {isUserExists && (
+            <p className="text-xs italic text-red-500 mt-2">用户已存在</p>
+          )}
+        </div>
+        <div className="mb-4">
+          <label
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="email"
+          >
+            Email
+          </label>
+          <input
+            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            id="email"
+            type="email"
+            placeholder="email@163.com"
+            {...register("email")}
+          />
+          {errors.email && (
+            <p className="text-xs italic text-red-500 mt-2">
+              {errors.email?.message}
             </p>
           )}
         </div>
-        <div className="md:ml-2">
+        <div>
+          <div className="mb-4 md:mr-2 md:mb-4">
+            <label
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              htmlFor="password"
+            >
+              密码
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              {...register("password")}
+            />
+            {errors.password && (
+              <p className="text-xs italic text-red-500 mt-2">
+                {errors.password?.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-4 md:mr-2 md:mb-4">
+            <label
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              htmlFor="c_password"
+            >
+              再次输入密码
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              id="c_password"
+              type="password"
+              placeholder="••••••••"
+              {...register("confirmPassword")}
+            />
+            {errors.confirmPassword && (
+              <p className="text-xs italic text-red-500 mt-2">
+                {errors.confirmPassword?.message}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="mb-4">
+          <input type="checkbox" id="terms" {...register("terms")} />
           <label
-            className="block mb-2 text-sm font-bold text-gray-700"
-            htmlFor="c_password"
+            htmlFor="terms"
+            className="ml-2 mb-2 text-sm font-bold text-gray-700"
           >
-            再次输入密码
+            我接受网站服务条款
           </label>
-          <input
-            className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded appearance-none focus:outline-none focus:shadow-outline"
-            id="c_password"
-            type="password"
-            {...register("confirmPassword")}
-          />
-          {errors.confirmPassword && (
+          {errors.terms && (
             <p className="text-xs italic text-red-500 mt-2">
-              {errors.confirmPassword?.message}
+              {errors.terms?.message}
             </p>
           )}
         </div>
-      </div>
-      <div className="mb-4">
-        <input type="checkbox" id="terms" {...register("terms")} />
-        <label
-          htmlFor="terms"
-          className="ml-2 mb-2 text-sm font-bold text-gray-700"
-        >
-          我接受网站服务条款
-        </label>
-        {errors.terms && (
-          <p className="text-xs italic text-red-500 mt-2">
-            {errors.terms?.message}
-          </p>
-        )}
-      </div>
-      <div className="mb-6 text-center">
-        <button
-          className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none focus:shadow-outline"
-          type="submit"
-        >
-          点击确认
-        </button>
-      </div>
-      <hr className="mb-6 border-t" />
-      <div className="text-center">
-        <a
-          className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
-          href="#"
-        >
-          忘记密码?
-        </a>
-      </div>
-      <div className="text-center">
-        <a
-          className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
-          href="/auth/loginin"
-        >
-          已有账户？请登录
-        </a>
-      </div>
-    </form>
+        <div className="mb-6 text-center">
+          <button
+            className="w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            type="submit"
+          >
+            确定
+          </button>
+        </div>
+        <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+          已有账户?{" "}
+          <a
+            href="/auth/loginin"
+            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+          >
+            登录
+          </a>
+        </p>
+      </form>
+    </div>
   );
 };
 

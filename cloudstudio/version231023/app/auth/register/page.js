@@ -1,18 +1,23 @@
 import RegisterForm from "@/components/auth/registerForm";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
+import { redirect } from "next/navigation";
 
-const Register = () => {
+const Register = async() => {
+  const session = await getServerSession(authOptions);
+  console.log(session);
+
+  if (!!session) {
+    redirect("/")
+  }
+
   return (
     <>
-      <div className="max-w-xl mx-auto w-full">
-      <div className="flex justify-center my-12">
-        <div className="w-full lg:w-11/12 bg-white p-5 rounded-lg shadow-xl">
-          <h3 className="pt-4 text-2xl text-center font-bold">
-            创建新用户
-          </h3>
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <RegisterForm />
         </div>
       </div>
-    </div>
     </>
   );
 };

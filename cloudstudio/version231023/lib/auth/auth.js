@@ -11,9 +11,9 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        name: {
-          label: "Name",
-          type: "name",
+        username: {
+          label: "Username",
+          type: "username",
           placeholder: "username",
         },
         password: {
@@ -23,12 +23,13 @@ export const authOptions = {
       },
 
       async authorize(credentials) {
-        const { name, password } = credentials;
+        const { username, password } = credentials;
+        console.log(username, password)
 
         try {
           const user = await prisma.User.findUnique({
             where: {
-              name: String(name),
+              username: String(username),
             },
           });
 
@@ -45,7 +46,7 @@ export const authOptions = {
           return {
             id: user.id,
             email: user.email,
-            name: user.name,
+            username: user.username,
             group: user.group,
             isActive: user.isActive,
             remark: user.remark,
