@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
+import UserNavbar from "./usernavbar";
 import Link from "next/link";
 
 export default async function LoginNavBar() {
@@ -21,10 +22,8 @@ export default async function LoginNavBar() {
           </div>
         </>
       ) : (
-        <div className="bg-provence-lavender rounded text-sm font-medium align-middle text-white px-3 py-2 hover:scale-120 hover:bg-purple-600 hover:shadow-lg transform transition duration-100 cursor-pointer">
-          <Link href="/auth/logout">
-            <p>登出</p>
-          </Link>
+        <div>
+          <UserNavbar />
         </div>
       )}
     </>

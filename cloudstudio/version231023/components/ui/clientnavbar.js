@@ -49,7 +49,7 @@ export default function ClientNavigation({ children }) {
             </Link>
           ))}
         </div>
-        <div className="hidden lg:flex lg:items-center lg:justify-end lg:gap-3 lg:m-2 lg:pt-1">
+        <div className="hidden lg:flex lg:items-center lg:justify-end lg:gap-3 lg:m-2 lg:pt-1 lg:ml-4">
           {children}
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function ClientNavigation({ children }) {
         onClose={setMobileMenuOpen}
       >
         <div className="fixed inset-0 z-10" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-10 overflow-y-auto mx-auto w-full bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-10 overflow-y-auto mx-auto min-w-[30%] bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <img
               src="https://cdn.pixabay.com/photo/2021/02/07/17/13/whale-5992048_1280.png"
@@ -91,7 +91,7 @@ export default function ClientNavigation({ children }) {
               </div>
             </div>
             <hr />
-            <div className="flex items-center justify-space gap-4 mt-5">
+            <div className="flex items-center justify-start mt-5">
               {children}
             </div>
           </div>
