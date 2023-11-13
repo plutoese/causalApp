@@ -1,0 +1,16 @@
+{
+    "labels": [
+      {
+        "divid": 1,
+        "id": "total",
+        "value": "total",
+        "name": "所有"
+      },
+      {
+        "divid": 2,
+        "id": "case",
+        "value": "case",
+        "name": "案例"
+      }
+    ]
+  }

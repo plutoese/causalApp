@@ -6,7 +6,7 @@ import { Dialog } from "@headlessui/react";
 import Link from "next/link";
 
 const nav_items = [
-  { id: "home", href: "/", label: "主页" },
+  { id: "home", href: "/", label: "首页" },
   { id: "case", href: "/", label: "案例" },
   { id: "tutorial", href: "/", label: "教程" },
   { id: "data", href: "/", label: "数据" },
