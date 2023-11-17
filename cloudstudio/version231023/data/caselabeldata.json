@@ -1,0 +1,25 @@
+{
+    "labels": [
+      {
+        "divid": 1,
+        "id": "total",
+        "type": -1,
+        "value": "total",
+        "name": "所有"
+      },
+      {
+        "divid": 2,
+        "id": "regularcase",
+        "type": 0,
+        "value": "regularcase",
+        "name": "常规案例"
+      },
+      {
+        "divid": 3,
+        "id": "interactivecase",
+        "type": 1,
+        "value": "interactivecase",
+        "name": "交互案例"
+      }
+    ]
+  }
