@@ -7,11 +7,19 @@ export async function POST(request) {
     const { query } = await request.json();
     const allCases = casesdata.cases;
 
+    if (query.trim().length == 0) {
+      return NextResponse.json({
+        success: true,
+        results: allCases,
+        message: "You got it!",
+      });
+    }
+
     const lowercaseQuery = query.toLowerCase();
     const fuse = new Fuse(allCases, {
       keys: ["label", "title", "abstract", "author"],
       includeScore: true,
-      threshold: 0.2,
+      isCaseSensitive: false,
     });
 
     const searchResults = fuse.search(lowercaseQuery);
